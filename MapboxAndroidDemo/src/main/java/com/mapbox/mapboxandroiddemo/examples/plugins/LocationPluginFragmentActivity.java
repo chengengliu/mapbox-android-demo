@@ -50,13 +50,13 @@ public class LocationPluginFragmentActivity extends AppCompatActivity implements
             // Create fragment
             final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            LatLng patagonia = new LatLng(-52.6885, -70.1395);
+            LatLng office = new LatLng(38.899895, -77.03401);
 
             // Build mapboxMap
             MapboxMapOptions options = new MapboxMapOptions();
             options.styleUrl(Style.OUTDOORS);
             options.camera(new CameraPosition.Builder()
-                    .target(patagonia)
+                    .target(office)
                     .zoom(9)
                     .build());
 
