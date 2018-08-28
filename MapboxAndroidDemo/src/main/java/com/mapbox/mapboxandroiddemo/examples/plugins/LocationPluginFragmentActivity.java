@@ -1,6 +1,5 @@
 package com.mapbox.mapboxandroiddemo.examples.plugins;
 
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
@@ -8,8 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.mapbox.android.core.location.LocationEngine;
-import com.mapbox.android.core.location.LocationEnginePriority;
-import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxandroiddemo.R;
@@ -26,15 +23,15 @@ import com.mapbox.mapboxsdk.maps.SupportMapFragment;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 import com.mapbox.mapboxsdk.plugins.locationlayer.modes.CameraMode;
 import com.mapbox.mapboxsdk.plugins.locationlayer.modes.RenderMode;
+
 import java.util.List;
 
 // #-code-snippet: location-plugin-fragment-activity full-java
 
-
-public class LocationPluginFragmentActivity extends AppCompatActivity implements MapFragment.OnMapViewReadyCallback, PermissionsListener {
+public class LocationPluginFragmentActivity extends AppCompatActivity implements
+  MapFragment.OnMapViewReadyCallback, PermissionsListener {
 
     private LocationLayerPlugin locationLayerPlugin;
-    private LocationEngine locationEngine;
     private MapView mapView;
     private MapboxMap mapboxMap;
     private PermissionsManager permissionsManager;
@@ -79,9 +76,7 @@ public class LocationPluginFragmentActivity extends AppCompatActivity implements
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
                 LocationPluginFragmentActivity.this.mapboxMap = mapboxMap;
-
-                getLifecycle().addObserver(locationLayerPlugin);
-
+                enableLocationPlugin();
             }
         });
     }
@@ -93,8 +88,6 @@ public class LocationPluginFragmentActivity extends AppCompatActivity implements
 
     @SuppressWarnings( {"MissingPermission"})
     private void enableLocationPlugin() {
-
-
         // Check if permissions are enabled and if not request
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
             // Create an instance of the plugin. Adding in LocationLayerOptions is also an optional
@@ -102,13 +95,11 @@ public class LocationPluginFragmentActivity extends AppCompatActivity implements
             locationLayerPlugin = new LocationLayerPlugin(mapView, mapboxMap);
             locationLayerPlugin.setCameraMode(CameraMode.TRACKING);
             locationLayerPlugin.setRenderMode(RenderMode.NORMAL);
-            locationLayerPlugin.setLocationEngine(new LocationEngineProvider(this).obtainLocationEngineBy(LocationEngine.Type.GOOGLE_PLAY_SERVICES));
-
+            getLifecycle().addObserver(locationLayerPlugin);
         } else {
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
         }
-
         getLifecycle().addObserver(locationLayerPlugin);
     }
 
@@ -131,6 +122,5 @@ public class LocationPluginFragmentActivity extends AppCompatActivity implements
             finish();
         }
     }
-
 }
 // #-end-code-snippet: location-plugin-fragment-activity full-java
