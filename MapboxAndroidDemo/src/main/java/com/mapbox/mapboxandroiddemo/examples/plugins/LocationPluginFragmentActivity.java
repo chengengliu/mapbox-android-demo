@@ -1,11 +1,15 @@
 package com.mapbox.mapboxandroiddemo.examples.plugins;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.mapbox.android.core.location.LocationEngine;
+import com.mapbox.android.core.location.LocationEnginePriority;
+import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxandroiddemo.R;
@@ -30,6 +34,7 @@ import java.util.List;
 public class LocationPluginFragmentActivity extends AppCompatActivity implements MapFragment.OnMapViewReadyCallback, PermissionsListener {
 
     private LocationLayerPlugin locationLayerPlugin;
+    private LocationEngine locationEngine;
     private MapView mapView;
     private MapboxMap mapboxMap;
     private PermissionsManager permissionsManager;
@@ -74,9 +79,6 @@ public class LocationPluginFragmentActivity extends AppCompatActivity implements
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
                 LocationPluginFragmentActivity.this.mapboxMap = mapboxMap;
-                locationLayerPlugin = new LocationLayerPlugin(mapView, mapboxMap);
-                locationLayerPlugin.setCameraMode(CameraMode.TRACKING);
-                locationLayerPlugin.setRenderMode(RenderMode.NORMAL);
 
                 getLifecycle().addObserver(locationLayerPlugin);
 
@@ -91,14 +93,16 @@ public class LocationPluginFragmentActivity extends AppCompatActivity implements
 
     @SuppressWarnings( {"MissingPermission"})
     private void enableLocationPlugin() {
+
+
         // Check if permissions are enabled and if not request
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
-
             // Create an instance of the plugin. Adding in LocationLayerOptions is also an optional
             // parameter
             locationLayerPlugin = new LocationLayerPlugin(mapView, mapboxMap);
             locationLayerPlugin.setCameraMode(CameraMode.TRACKING);
             locationLayerPlugin.setRenderMode(RenderMode.NORMAL);
+            locationLayerPlugin.setLocationEngine(new LocationEngineProvider(this).obtainLocationEngineBy(LocationEngine.Type.GOOGLE_PLAY_SERVICES));
 
         } else {
             permissionsManager = new PermissionsManager(this);
