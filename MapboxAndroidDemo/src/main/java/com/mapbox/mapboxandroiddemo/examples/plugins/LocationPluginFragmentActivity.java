@@ -9,7 +9,6 @@ import android.widget.Toast;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxandroiddemo.R;
-import com.mapbox.mapboxandroiddemo.examples.basics.SupportMapFragmentActivity;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.constants.Style;
@@ -38,7 +37,7 @@ public class LocationPluginFragmentActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_basic_support_map_frag);
+        setContentView(R.layout.activity_user_location_map_frag);
 
         // Mapbox access token is configured here. This needs to be called either in your application
         // object or in the same activity which contains the mapview.
@@ -57,6 +56,7 @@ public class LocationPluginFragmentActivity extends AppCompatActivity implements
             MapboxMapOptions options = new MapboxMapOptions();
             options.styleUrl(Style.OUTDOORS);
             options.camera(new CameraPosition.Builder()
+                    .target(patagonia)
                     .zoom(9)
                     .build());
 
@@ -64,7 +64,7 @@ public class LocationPluginFragmentActivity extends AppCompatActivity implements
             mapFragment = SupportMapFragment.newInstance(options);
 
             // Add map fragment to parent container
-            transaction.add(R.id.location_frag_cardview, mapFragment, "com.mapbox.map");
+            transaction.add(R.id.location_frag_container, mapFragment, "com.mapbox.map");
             transaction.commit();
         } else {
             mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag("com.mapbox.map");
