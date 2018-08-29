@@ -462,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
            R.string.activity_user_location_map_frag_title,
            R.string.activity_user_location_map_frag_plugin_description,
            new Intent(MainActivity.this, LocationPluginFragmentActivity.class),
-           R.string.activity_plugins_location_plugin_url, true, BuildConfig.MIN_SDK_VERSION)
+           R.string.activity_user_location_fragment_plugin_url, true, BuildConfig.MIN_SDK_VERSION)
         );
 
         currentCategory = R.id.nav_plugins;
