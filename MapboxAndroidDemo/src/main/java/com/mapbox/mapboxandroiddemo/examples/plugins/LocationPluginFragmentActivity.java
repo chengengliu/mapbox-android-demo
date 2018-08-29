@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxandroiddemo.R;
@@ -31,96 +30,96 @@ import java.util.List;
 public class LocationPluginFragmentActivity extends AppCompatActivity implements
   MapFragment.OnMapViewReadyCallback, PermissionsListener {
 
-    private LocationLayerPlugin locationLayerPlugin;
-    private MapView mapView;
-    private MapboxMap mapboxMap;
-    private PermissionsManager permissionsManager;
+  private LocationLayerPlugin locationLayerPlugin;
+  private MapView mapView;
+  private MapboxMap mapboxMap;
+  private PermissionsManager permissionsManager;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_location_map_frag);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_user_location_map_frag);
 
-        // Mapbox access token is configured here. This needs to be called either in your application
-        // object or in the same activity which contains the mapview.
-        Mapbox.getInstance(this, getString(R.string.access_token));
+    // Mapbox access token is configured here. This needs to be called either in your application
+    // object or in the same activity which contains the mapview.
+    Mapbox.getInstance(this, getString(R.string.access_token));
 
-        // Create supportMapFragment
-        SupportMapFragment mapFragment;
-        if (savedInstanceState == null) {
+    // Create supportMapFragment
+    SupportMapFragment mapFragment;
+    if (savedInstanceState == null) {
 
-            // Create fragment
-            final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+      // Create fragment
+      final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            LatLng office = new LatLng(38.899895, -77.03401);
+      LatLng office = new LatLng(38.899895, -77.03401);
 
-            // Build mapboxMap
-            MapboxMapOptions options = new MapboxMapOptions();
-            options.styleUrl(Style.OUTDOORS);
-            options.camera(new CameraPosition.Builder()
-                    .target(office)
-                    .zoom(9)
-                    .build());
+      // Build mapboxMap
+      MapboxMapOptions options = new MapboxMapOptions();
+      options.styleUrl(Style.OUTDOORS);
+      options.camera(new CameraPosition.Builder()
+        .target(office)
+        .zoom(9)
+        .build());
 
-            // Create map fragment
-            mapFragment = SupportMapFragment.newInstance(options);
+      // Create map fragment
+      mapFragment = SupportMapFragment.newInstance(options);
 
-            // Add map fragment to parent container
-            transaction.add(R.id.location_frag_container, mapFragment, "com.mapbox.map");
-            transaction.commit();
-        } else {
-            mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag("com.mapbox.map");
-        }
-
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(MapboxMap mapboxMap) {
-                LocationPluginFragmentActivity.this.mapboxMap = mapboxMap;
-                enableLocationPlugin();
-            }
-        });
+      // Add map fragment to parent container
+      transaction.add(R.id.location_frag_container, mapFragment, "com.mapbox.map");
+      transaction.commit();
+    } else {
+      mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag("com.mapbox.map");
     }
 
-    @Override
-    public void onMapViewReady(MapView mapView) {
-        this.mapView = mapView;
-    }
+    mapFragment.getMapAsync(new OnMapReadyCallback() {
+      @Override
+      public void onMapReady(MapboxMap mapboxMap) {
+        LocationPluginFragmentActivity.this.mapboxMap = mapboxMap;
+        enableLocationPlugin();
+      }
+    });
+  }
 
-    @SuppressWarnings( {"MissingPermission"})
-    private void enableLocationPlugin() {
-        // Check if permissions are enabled and if not request
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
-            // Create an instance of the plugin. Adding in LocationLayerOptions is also an optional
-            // parameter
-            locationLayerPlugin = new LocationLayerPlugin(mapView, mapboxMap);
-            locationLayerPlugin.setCameraMode(CameraMode.TRACKING);
-            locationLayerPlugin.setRenderMode(RenderMode.NORMAL);
-            getLifecycle().addObserver(locationLayerPlugin);
-        } else {
-            permissionsManager = new PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(this);
-        }
-        getLifecycle().addObserver(locationLayerPlugin);
-    }
+  @Override
+  public void onMapViewReady(MapView mapView) {
+    this.mapView = mapView;
+  }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+  @SuppressWarnings( {"MissingPermission"})
+  private void enableLocationPlugin() {
+    // Check if permissions are enabled and if not request
+    if (PermissionsManager.areLocationPermissionsGranted(this)) {
+      // Create an instance of the plugin. Adding in LocationLayerOptions is also an optional
+      // parameter
+      locationLayerPlugin = new LocationLayerPlugin(mapView, mapboxMap);
+      locationLayerPlugin.setCameraMode(CameraMode.TRACKING);
+      locationLayerPlugin.setRenderMode(RenderMode.NORMAL);
+      getLifecycle().addObserver(locationLayerPlugin);
+    } else {
+      permissionsManager = new PermissionsManager(this);
+      permissionsManager.requestLocationPermissions(this);
     }
+    getLifecycle().addObserver(locationLayerPlugin);
+  }
 
-    @Override
-    public void onExplanationNeeded(List<String> permissionsToExplain) {
-        Toast.makeText(this, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show();
-    }
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+  }
 
-    @Override
-    public void onPermissionResult(boolean granted) {
-        if (granted) {
-            enableLocationPlugin();
-        } else {
-            Toast.makeText(this, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show();
-            finish();
-        }
+  @Override
+  public void onExplanationNeeded(List<String> permissionsToExplain) {
+    Toast.makeText(this, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show();
+  }
+
+  @Override
+  public void onPermissionResult(boolean granted) {
+    if (granted) {
+      enableLocationPlugin();
+    } else {
+      Toast.makeText(this, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show();
+      finish();
     }
+  }
 }
 // #-end-code-snippet: location-plugin-fragment-activity full-java
